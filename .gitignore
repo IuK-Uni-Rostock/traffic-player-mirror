@@ -1,0 +1,15 @@
+.idea/*
+
+# Byte-compiled / optimized / DLL files
+__pycache__/
+*.py[cod]
+*$py.class
+
+# prevent configuration details from committing
+config/*
+
+# prevent data from committing
+data/*
+
+# prevent to commit venv
+venv/*
