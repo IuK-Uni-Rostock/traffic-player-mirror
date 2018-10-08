@@ -1,8 +1,9 @@
 from .attack import Attack
 
+
 class ReplayAttack(Attack):
-    def __init(self, database, seed=314159265359, target_players, replay_speed, start_time, end_time, selection_rate):
-        super.__init__(database, seed, target_players)
+    def __init__(self, database, target_players, replay_speed, start_time, end_time, selection_rate, seed=314159265359):
+        super().__init__(database, seed, target_players)
         self.__replay_speed = replay_speed
         self.__start_time = start_time
         self.__end_time = end_time
