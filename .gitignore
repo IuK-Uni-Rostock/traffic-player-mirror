@@ -13,3 +13,7 @@ data/*
 
 # prevent to commit venv
 venv/*
+
+build/*
+dist/*
+*.egg-info
