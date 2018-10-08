@@ -18,11 +18,11 @@ class Manipulator:
 
         for idx, telegram in enumerate(self.telegrams):
             t_curr = telegram.timestamp
-            t_next = self.telegrams[idx + 1].timestamp
-            speed = multiplier * (t_next - t_curr)
-            telegram.timestamp = t_curr - speed
+            if idx + 1 < len(self.telegrams):
+                t_next = self.telegrams[idx + 1].timestamp
+                adjustment = multiplier * (t_next - t_curr)
+                telegram.timestamp = t_curr - adjustment
 
-        return self.telegrams
 
     def filter_percentage(selection_rate):
         """Filters the telegrams based on the selection rate.
