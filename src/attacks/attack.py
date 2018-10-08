@@ -25,6 +25,9 @@ class Attack:
         """
         :return: Serializable dict that will be sent to the UI
         """
-        info = {**cls.metadata, 'name': cls.__name__}
+        info = {**cls.metadata, '__name__': cls.__name__}
+        info["parameters"] = []
+        for name, type in cls.__init__.__annotations__.items():
+            info["parameters"].append({**type.get_parameter_info(), "name": name})
         return info
 

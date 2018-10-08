@@ -9,7 +9,7 @@
     >
       <v-list>
         <v-list-tile v-for="a in attacks" :key="JSON.stringify(a)"
-          :value="selectedAttack == a['__name__']" @click="selectedAttack = a['__name__']">
+          :value="selectedAttack['__name__'] == a['__name__']" @click="selectedAttack = a">
           <v-list-tile-action>
             <v-icon v-html="a.icon"></v-icon>
           </v-list-tile-action>
@@ -26,7 +26,7 @@
       <h1><v-icon color="primary">mdi-play-network</v-icon> KNX-Player</h1>
     </v-toolbar>
     <v-content>
-      <Attack/>
+      <Attack :attack="selectedAttack"/>
 
     </v-content>
 
@@ -59,14 +59,11 @@ export default {
   data () {
     return {
       drawer: true,
-      selectedAttack: 'replay',
+      selectedAttack: {},
       right: true,
       title: 'KNX-Player',
       attacks: [],
-      runningAttack: {
-        name: 'Denial of Service',
-        progress: 15
-      }
+      runningAttack: false
     }
   },
   methods: {
@@ -78,7 +75,10 @@ export default {
     }
   },
   mounted: function() {
-    sio.on('attacks', a => {this.attacks = a});
+    sio.on('attacks', a => {
+      this.attacks = a;
+      this.selectedAttack = a[0];
+      });
     sio.emit('get attacks');
   }
 }
