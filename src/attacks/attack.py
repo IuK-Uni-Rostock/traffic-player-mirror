@@ -1,3 +1,5 @@
+import pika
+import json
 from random import Random
 
 from ..database import Database
@@ -13,12 +15,24 @@ class Attack:
         self._db = database
 
     def prepare(self):
+        """Subclasses must define this method."""
         raise NotImplementedError
 
     def start(self, progress_callback):
-        # self._manipulator.telegrams, self._target_players
-        # TODO: fill message queue
-        pass
+        assert len(self.target_players) > 0, "No target players available"
+        assert len(self.manipulator.telegrams) > 0, "No telegrams available"
+
+        connection = pika.BlockingConnection(pika.ConnectionParameters('127.0.0.1')) # TODO change to parameter
+        for idx, player in enumerate(self.target_players):
+            channel = connection.channel()
+            name = 'traffic-player-{0}'.format(player)
+            channel.queue_declare(queue=name)
+
+            # split telegrams equally between all target players
+            for t in self.manipulator.telegrams[idx:][::len(self.target_players)]:
+                channel.basic_publish(exchange='', routing_key=name, body=json.dumps(t.__dic__))
+
+        connection.close()
 
     @classmethod
     def get_attack_info(cls):
