@@ -14,18 +14,17 @@
           </v-slider>
           <v-text-field v-if="p['__name__'] == 'TextfieldType'"
             :label='p.name.replace("_", " ")'
-            placeholder="p.default"
+            :placeholder="String(p.default)"
             v-model="values[p.name]"
           ></v-text-field>
           <div v-if="p['__name__'] == 'TimeSliderType'">
-          <v-slider
-            :min="p.min"
-            :max="p.max"
-            v-model="values[p.name]"
-            append-icon="mdi-calendar-clock"
-            :label='p.name.replace("_", " ")'>
-          </v-slider>
-          <div class="time-hint">{{ toReadableTime(values[p.name]) }}</div>
+            <time-slider
+              @value-change="values[p.name] = $event"
+              :value="values[p.name]"
+              :min="p.min"
+              :max="p.max"
+              :label='p.name.replace("_", " ")'>  
+            </time-slider>
           </div>
           <div v-if="p['__name__'] =='LogPlayerType' || p['__name__'] == 'MultipleChoiceType'">
             <v-select
@@ -49,16 +48,35 @@
         </v-flex>
       </v-layout>
     </v-slide-y-transition>
+      <v-footer class="pa-3">
+        <v-spacer></v-spacer>
+        <v-spacer></v-spacer>
+        <h3 v-show="status > 0">Angriff läuft</h3>
+        <v-spacer></v-spacer>
+        <v-progress-linear v-model="status" style="width: 20vw" v-if="status > 0"></v-progress-linear>
+        <v-spacer></v-spacer>
+        <v-btn fab dark small :disabled="status == undefined" @click="stopAttack()">
+          <v-icon dark>stop</v-icon>
+        </v-btn>
+        <v-btn fab dark small color="primary" :disabled="status != undefined" @click="startAttack()">
+          <v-icon dark>mdi-play</v-icon>
+        </v-btn>
+    </v-footer>
   </v-container>
 </template>
 
 <script>
 import Vue from 'vue'
+import TimeSlider from './TimeSlider'
 
 export default {
   name: 'Attack',
+  components: {
+    TimeSlider
+  },
   props: {
-    attack: Object
+    attack: Object,
+    status: Number
   },
   data: function() {return {
     values: {}
@@ -70,42 +88,12 @@ export default {
     }
   },
   methods: {
-    toReadableTime: function(temp) {
-      function numberEnding (number) {
-          return (number > 1) ? 's' : '';
-      }
-
-      let out = ""
-      let del = "";
-
-      var years = Math.floor(temp / 31536000);
-      if (years) {
-          out += del + years + ' year' + numberEnding(years);
-          del = ", ";
-      }
-      //TODO: Months! Maybe weeks? 
-      var days = Math.floor((temp %= 31536000) / 86400);
-      if (days) {
-          out += del + days + ' day' + numberEnding(days);
-          del = ", ";
-      }
-      var hours = Math.floor((temp %= 86400) / 3600);
-      if (hours) {
-          out += del + hours + ' hour' + numberEnding(hours);
-          del = ", ";
-      }
-      var minutes = Math.floor((temp %= 3600) / 60);
-      if (minutes) {
-          out += del + minutes + ' minute' + numberEnding(minutes);
-          del = ", ";
-      }
-      var seconds = temp % 60;
-      if (seconds) {
-          out += del + seconds + ' second' + numberEnding(seconds);
-      }
-
-      return out;
-      }
+    startAttack: function() {
+      window.sio.emit('start attack', this.attack["__name__"],  this.values);
+    },
+    stopAttack: function() {
+       window.sio.emit('stop attack', this.attack["__name__"]);
+    },
   }
 }
 </script>
@@ -115,13 +103,9 @@ export default {
 .v-label {
     text-transform:capitalize;
 }
-.time-hint {
-  text-align: center;
-  color: rgba(0,0,0,.54);
-}
 
 .layout .flex {
-  width: 70vh;
+  width: 70vw;
   padding: 4vh 0;
 }
 </style>

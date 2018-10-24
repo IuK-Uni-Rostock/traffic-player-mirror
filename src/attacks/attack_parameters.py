@@ -2,6 +2,8 @@ from typing import Optional
 
 
 class AttackParameter(object):
+    value = None
+
     def get_parameter_info(self):
         return {**self.__dict__, '__name__': self.__class__.__name__, **self._extra_info()}
 

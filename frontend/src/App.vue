@@ -1,5 +1,22 @@
 <template>
   <v-app>
+    <v-snackbar
+      v-model="snackbar"
+      multi-line
+      auto-height
+      top
+      :timeout="100000"
+    >
+    <pre>{{ errorText }}</pre>
+    <v-btn
+        color="pink"
+        flat
+        @click="snackbar = false"
+      >
+        Close
+      </v-btn>
+      
+    </v-snackbar>
     <v-navigation-drawer
       persistent
       v-model="drawer"
@@ -26,25 +43,11 @@
       <h1><v-icon color="primary">mdi-play-network</v-icon> KNX-Player</h1>
     </v-toolbar>
     <v-content>
-      <Attack v-for="a in this.attacks" :key="a.name" :attack="a" v-show="a.name == selectedAttack.name"/>
+      <Attack v-for="a in this.attacks" :key="a.name" :status="runningAttacks[a['__name__']]" :attack="a" v-show="a.name == selectedAttack.name"/>
 
     </v-content>
 
-    <v-footer class="pa-3">
-      <v-spacer></v-spacer>
-      <v-spacer></v-spacer>
-      <h3 v-show="runningAttack != false">Aktueller Angriff: {{ runningAttack.name }}</h3>
-      <v-spacer></v-spacer>
-      <v-progress-linear v-model="runningAttack.progress" style="width: 20vw" v-show="runningAttack != false"></v-progress-linear>
-      <v-spacer></v-spacer>
-      <v-btn fab dark small :disabled="runningAttack == false" @click="stopAttack()">
-        <v-icon dark>stop</v-icon>
-      </v-btn>
-      <v-btn fab dark small color="primary" :disabled="runningAttack != false" @click="startAttack()">
-        <v-icon dark>mdi-play</v-icon>
-      </v-btn>
-    </v-footer>
-  
+ 
   </v-app>
 </template>
 
@@ -64,22 +67,26 @@ export default {
       right: true,
       title: 'KNX-Player',
       attacks: [],
-      runningAttack: false
+      runningAttacks: {},
+      errorText: "",
+      snackbar: false
     }
   },
   methods: {
-    stopAttack: function() {
-      this.runningAttack = false;
-    },
-    startAttack: function() {
-
-    }
   },
   mounted: function() {
     window.sio.on('attacks', a => {
       Vue.set(this, 'attacks', a);
       Vue.set(this, 'selectedAttack', a[0]);
       });
+      window.sio.on('attack status', a => {
+        console.log(a);
+        this.runningAttacks[a["name"]] = a["status"];
+      })
+      window.sio.on('error', a => {
+        this.snackbar = true;
+        this.errorText = a;
+      })
     window.sio.emit('get attacks');
   }
 }
@@ -88,5 +95,12 @@ export default {
 <style>
 footer {
   height: 70px !important
+}
+.v-snack__content {
+  font-size: 8px;
+}
+
+.v-snack__wrapper {
+  max-width: 100vw !important;
 }
 </style>

@@ -15,7 +15,7 @@ class DoSAttack(Attack):
                  duration: TimeSliderType(1, 60*60*24),  # 1s-24h
                  telegram_types: MultipleChoiceType(('Reset', 'Join')),
                  target_addresses: TextfieldType(),
-                 seed=314159265359):
+                 seed: TextfieldType(default=314159265359)):
         super().__init__(database, seed, target_players)
         self.__workload = workload
         self.__duration = duration
