@@ -21,6 +21,8 @@ class Attack:
         assert len(self._target_players) > 0, "No target players available"
         assert len(self._manipulator.telegrams) > 0, "No telegrams available"
 
+        all_telegrams = len(self._manipulator.telegrams)
+        sent_telegrams = 0
         connection = pika.BlockingConnection(pika.ConnectionParameters('127.0.0.1')) # TODO change to parameter
         for idx, player in enumerate(self._target_players):
             channel = connection.channel()
@@ -30,6 +32,9 @@ class Attack:
             # split telegrams equally between all target players
             for t in self._manipulator.telegrams[idx:][::len(self._target_players)]:
                 channel.basic_publish(exchange='', routing_key=name, body=json.dumps(t.__dic__))
+                sent_telegrams += 1
+                # report progress
+                progress_callback((sent_telegrams / all_telegrams) * 100)
 
         connection.close()
 
