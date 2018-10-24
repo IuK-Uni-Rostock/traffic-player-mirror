@@ -9,6 +9,16 @@ class AttackParameter(object):
         return {}
 
 
+class MultipleChoiceType(AttackParameter):
+    def __init__(self, choices: list):
+        self.choices = choices
+
+
+class SingleChoiceType(AttackParameter):
+    def __init__(self, choices: list):
+        self.choices = choices
+
+
 class LogPlayerType(AttackParameter):
     def _extra_info(self):
         # TODO get at runtime
@@ -31,3 +41,8 @@ class SliderType(AttackParameter):
 class TimeSliderType(SliderType):
     # values are in seconds
     pass
+
+
+class TextfieldType(AttackParameter):
+    def __init__(self, default: Optional[str] = ""):
+        self.default = default

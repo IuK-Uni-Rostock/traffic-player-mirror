@@ -26,7 +26,7 @@
       <h1><v-icon color="primary">mdi-play-network</v-icon> KNX-Player</h1>
     </v-toolbar>
     <v-content>
-      <Attack :attack="selectedAttack"/>
+      <Attack v-for="a in this.attacks" :key="a.name" :attack="a" v-show="a.name == selectedAttack.name"/>
 
     </v-content>
 
@@ -50,6 +50,7 @@
 
 <script>
 import Attack from './components/Attack'
+import Vue from 'vue'
 
 export default {
   name: 'App',
@@ -75,11 +76,11 @@ export default {
     }
   },
   mounted: function() {
-    sio.on('attacks', a => {
-      this.attacks = a;
-      this.selectedAttack = a[0];
+    window.sio.on('attacks', a => {
+      Vue.set(this, 'attacks', a);
+      Vue.set(this, 'selectedAttack', a[0]);
       });
-    sio.emit('get attacks');
+    window.sio.emit('get attacks');
   }
 }
 </script>
