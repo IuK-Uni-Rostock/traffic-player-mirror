@@ -1,6 +1,5 @@
 import pika
 import json
-from random import Random
 
 from ..database import Database
 from ..manipulator import Manipulator
@@ -19,17 +18,17 @@ class Attack:
         raise NotImplementedError
 
     def start(self, progress_callback):
-        assert len(self.target_players) > 0, "No target players available"
-        assert len(self.manipulator.telegrams) > 0, "No telegrams available"
+        assert len(self._target_players) > 0, "No target players available"
+        assert len(self._manipulator.telegrams) > 0, "No telegrams available"
 
         connection = pika.BlockingConnection(pika.ConnectionParameters('127.0.0.1')) # TODO change to parameter
-        for idx, player in enumerate(self.target_players):
+        for idx, player in enumerate(self._target_players):
             channel = connection.channel()
             name = 'traffic-player-{0}'.format(player)
             channel.queue_declare(queue=name)
 
             # split telegrams equally between all target players
-            for t in self.manipulator.telegrams[idx:][::len(self.target_players)]:
+            for t in self._manipulator.telegrams[idx:][::len(self._target_players)]:
                 channel.basic_publish(exchange='', routing_key=name, body=json.dumps(t.__dic__))
 
         connection.close()
