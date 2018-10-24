@@ -1,10 +1,13 @@
+import importlib
 import logging
+import sys
 import traceback
-
+import os
 import socketio
 from aiohttp import web
 from aiohttp_index import IndexMiddleware
 from src.attacks import attacks
+from src.database import Database
 
 sio = socketio.AsyncServer()
 app = web.Application(middlewares=[IndexMiddleware()])
@@ -30,7 +33,9 @@ async def error(msg):
 @sio.on('start attack')
 async def start_attack(sid, name, params):
     print("Starting attack", name, params)
-    db = None # TODO
+    sys.path.insert(0, os.path.abspath(os.path.dirname(os.path.realpath(__file__)) + '/../config'))
+    db_config = importlib.import_module('config')
+    db = Database(db_config.db_cfg, 'log_kzh')
     args = [db]
     for a in attacks:
         if a.__name__ == name:
@@ -70,4 +75,3 @@ def disconnect(sid):
 
 app.router.add_get('/', index)
 app.router.add_static('/', './frontend/dist/')
-

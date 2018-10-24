@@ -25,6 +25,7 @@ class Database:
         telegrams = []
         for row in rows:
             if row[2] is None and row[3] is None: # check for ack telegram
+                continue # ignore for now
                 t = AckTelegram()
                 t.sequence_number = row[0]
                 t.timestamp = row[1]
