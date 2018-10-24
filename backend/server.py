@@ -1,4 +1,4 @@
-import importlib
+import importlib, inspect
 import logging
 import sys
 import traceback
@@ -39,7 +39,7 @@ async def start_attack(sid, name, params):
     args = [db]
     for a in attacks:
         if a.__name__ == name:
-            for k, t in a.__init__.__annotations__.items():
+            for k in inspect.getargspec(a.__init__)[0][2:]:
                 try:
                     args.append(params[k])
                 except KeyError:
