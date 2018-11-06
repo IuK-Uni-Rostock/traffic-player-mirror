@@ -43,15 +43,13 @@ class Telegram:
             apci_type=self.apci,
             apci_data=self.apdu,
             tpci_type='UDP',
-            tpci_sequence=0,
-            tpci_control_type=None,
             priority=self.priority,
             repeat=self.repeated,
             hop_count=self.hop_count
         )
 
     @staticmethod
-    def create_cemi_frame(source, destination, group_address, apci_type, apci_data, tpci_type, tpci_control_type, tpci_sequence, hop_count=6, confirm=False, ack_req=False, priority=0x03, system_broadcast=True, repeat=True, extended_frame=False, data=None):
+    def create_cemi_frame(source, destination, group_address, apci_type, apci_data, tpci_type, tpci_control_type=None, tpci_sequence=0, hop_count=6, confirm=False, ack_req=False, priority=0x03, system_broadcast=True, repeat=True, extended_frame=False, data=None):
         data_request = bytearray(struct.pack('!B', ExtendedDataRequest.pack_control_field(
             confirm=confirm,
             acknowledge_req=ack_req,
