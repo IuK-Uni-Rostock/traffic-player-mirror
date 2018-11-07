@@ -15,16 +15,20 @@ class Telegram:
     timestamp = None
     source_addr = None
     destination_addr = None
-    apci = None
-    tpci = None
+    extended_frame = None
     priority = None
-    repeated = None
+    repeat = None
+    ack_req = None
+    confirm = None
+    system_broadcast = None
     hop_count = None
-    apdu = None
-    payload_length = None
-    cemi = None
+    tpci = None
+    tpci_sequence = None
+    apci = None
     payload_data = None
+    payload_length = None
     is_manipulated = None
+    attack_type_id = None
     sensor_addr = None
 
     def __init__(self, **entries):
@@ -41,11 +45,16 @@ class Telegram:
             destination=knxmap.utils.pack_knx_group_address(self.destination_addr) if group_address else knxmap.utils.pack_knx_address(self.destination_addr),
             group_address=group_address,
             apci_type=self.apci,
-            apci_data=self.apdu,
-            tpci_type='UDP',
+            apci_data=self.payload_data,
+            tpci_type=self.tpci,
+            tpci_sequence=self.tpci_sequence,
+            hop_count=self.hop_count,
+            confirm=self.confirm,
+            ack_req=self.ack_req,
             priority=self.priority,
-            repeat=self.repeated,
-            hop_count=self.hop_count
+            system_broadcast=self.system_broadcast,
+            repeat=self.repeat,
+            extended_frame=self.extended_frame
         )
 
     @staticmethod
@@ -101,13 +110,12 @@ class AckTelegram:
     sequence_number = None
     timestamp = None
     apci = None
-    cemi = None
     is_manipulated = None
+    attack_type_id = None
     sensor_addr = None
 
 class UnknownTelegram:
     sequence_number = None
     timestamp = None
     cemi = None
-    is_manipulated = None
     sensor_addr = None

@@ -41,7 +41,7 @@ class Manipulator:
         """Filters the telegrams based on selected telegram types.
 
         For example:
-        Use telegram type ['A_GROUP_VALUE_WRITE'] to filter by group-value-write telegrams.
+        Use telegram type ['A_GroupValue_Write'] to filter by group-value-write telegrams.
         """
         assert len(self.telegrams) > 0, "no telegrams available"
         assert len(telegram_types) > 0, "at least one telegram type must be given"

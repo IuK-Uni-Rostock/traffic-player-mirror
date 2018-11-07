@@ -48,4 +48,3 @@ class Attack:
         for name, type in cls.__init__.__annotations__.items():
             info["parameters"].append({**type.get_parameter_info(), "name": name})
         return info
-
