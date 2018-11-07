@@ -44,7 +44,7 @@ class Database:
                 t.source_addr = row[2]
                 t.destination_addr = row[3]
                 t.extended_frame = row[4]
-                t.priority = row[5]
+                t.priority = PRIORITIES.get(row[5])
                 t.repeat = row[6]
                 t.ack_req = row[7]
                 t.confirm = row[8]
