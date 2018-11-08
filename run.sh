@@ -26,6 +26,7 @@ set -ex
 
 # Building web-frontend...
 cd frontend
+yarn install
 yarn build
 cd ..
 
