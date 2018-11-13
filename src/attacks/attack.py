@@ -31,7 +31,7 @@ class Attack:
 
             # split telegrams equally between all target players
             for t in self._manipulator.telegrams[idx:][::len(self._target_players)]:
-                channel.basic_publish(exchange='', routing_key=name, body=json.dumps(t.__dict__))
+                channel.basic_publish(exchange='', routing_key=name, body=json.dumps(t.__dict__, default=str))
                 sent_telegrams += 1
                 # report progress
                 progress_callback((sent_telegrams / all_telegrams) * 100)

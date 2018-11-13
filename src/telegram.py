@@ -106,6 +106,12 @@ class Telegram:
         cemi.extend(data_request)
         return cemi
 
+    def __repr__(self):
+        return """Telegram(src={source_addr}, dest={destination_addr}, extended_frame={extended_frame}, priority={priority},
+         repeat={repeat}, ack_req={ack_req}, confirm={confirm}, system_broadcast={system_broadcast}, hop_count={hop_count},
+         tpci={tpci}, tpci_sequence={tpci_sequence}, apci={apci}, payload_data={payload_data}, payload_length={payload_length},
+         timestamp={timestamp}, is_manipulated={is_manipulated}, sensor_addr={sensor_addr})""".format(**self.__dict__)
+
 class AckTelegram:
     sequence_number = None
     timestamp = None

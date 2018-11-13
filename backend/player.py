@@ -6,12 +6,16 @@ import sys
 
 import pika
 
-from telegram import Telegram
+from src.telegram import Telegram
 
 ARGS = argparse.ArgumentParser(description='Sends received messages on the KNX bus',
                                formatter_class=argparse.ArgumentDefaultsHelpFormatter)
 
 ARGS.add_argument('-p', action='store', dest='player_id', type=int, help='player id')
+
+def telegram_received(ch, method, properties, body):
+    t = Telegram(**json.loads(body))
+    print(t.pack().hex())
 
 if __name__ == "__main__":
     # print(Telegram.create_cemi_frame(source=0, destination=1, group_address=1, apci_type='A_GroupValue_Write', tpci_type='UDP', apci_data=1, tpci_control_type=None, tpci_sequence=0).hex())
@@ -23,13 +27,5 @@ if __name__ == "__main__":
     name = 'traffic-player-{0}'.format(args.player_id)
     channel.queue_declare(queue=name)
     channel.basic_consume(telegram_received, queue=name, no_ack=True)
-    print(' [*] Waiting for messages. To exit press CTRL+C')
+    print('Waiting for messages. To exit press CTRL+C')
     channel.start_consuming()
-
-
-def telegram_received(ch, method, properties, body):
-    t = Telegram(**json.loads(body))
-    print(" [x] Received %r" % body)
-    print(t.source_addr)
-    print(t.destination_addr)
-    print(t.pack().hex())

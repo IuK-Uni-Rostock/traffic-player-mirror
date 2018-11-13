@@ -1,6 +1,8 @@
+from datetime import timedelta
 from random import Random
 
 from .telegram import AckTelegram, Telegram
+
 
 class Manipulator:
     def __init__(self, seed):
@@ -19,12 +21,12 @@ class Manipulator:
         assert len(self.telegrams) > 0, "no telegrams available"
 
         for idx, telegram in enumerate(self.telegrams):
-            t_curr = telegram.timestamp
-            if idx + 1 < len(self.telegrams):
-                t_next = self.telegrams[idx + 1].timestamp
-                adjustment = multiplier * (t_next - t_curr)
-                telegram.timestamp = t_curr - adjustment
-
+            if idx > 0 and idx + 1 < len(self.telegrams):
+                t_prev = self.telegrams[idx - 1].timestamp
+                t_curr = telegram.timestamp
+                delta = t_curr - t_prev
+                adjustment = timedelta(seconds=multiplier * delta.total_seconds())
+                self.telegrams[idx - 1].timestamp = t_prev - adjustment
 
     def filter_percentage(self, selection_rate):
         """Filters the telegrams based on the selection rate.

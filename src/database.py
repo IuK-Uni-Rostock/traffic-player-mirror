@@ -1,6 +1,6 @@
 import mysql.connector
 
-from .conversation import APCI_TYPES, PRIORITIES, TPCI_TYPES
+from .converter import APCI_TYPES, PRIORITIES, TPCI_TYPES
 from .telegram import AckTelegram, Telegram
 
 
@@ -21,8 +21,8 @@ class Database:
         cursor = self.__con.cursor()
         cursor.execute("SELECT sequence_number, timestamp, source_addr, destination_addr, extended_frame, priority, `repeat`, ack_req, " \
                        "confirm, system_broadcast, hop_count, tpci, tpci_sequence, apci, payload_data, payload_length, is_manipulated, " \
-                       "attack_type_id, sensor_addr) " \
-                       "FROM {0} WHERE timestamp >= {1} AND timestamp <= {2}".format(self.__log_table, start_time, end_time))
+                       "attack_type_id, sensor_addr " \
+                       "FROM {0} WHERE timestamp >= '{1}' AND timestamp <= '{2}' ORDER BY timestamp".format(self.__log_table, start_time, end_time))
         rows = cursor.fetchall()
 
         telegrams = []
@@ -53,7 +53,7 @@ class Database:
                 t.tpci = TPCI_TYPES.get(row[11])
                 t.tpci_sequence = row[12]
                 t.apci = APCI_TYPES.get(row[13])
-                t.payload_data = row[14]
+                t.payload_data = int(row[14]) # TODO: handle all types of payload data
                 t.payload_length = row[15]
                 t.is_manipulated = row[16]
                 t.attack_type_id = row[17]
