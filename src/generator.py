@@ -1,7 +1,7 @@
 from datetime import datetime
 from random import Random
 
-from .telegram import Telegram
+from src.telegram import Telegram
 
 
 class Generator:
@@ -9,10 +9,14 @@ class Generator:
         self._rng = Random()
         self._rng.seed(seed)
 
-    def generate(self, types, amount):
-        """Generates a random sequence of telegrams using the given telegram types."""
-        assert amount > 0, "amount must be > 0"
+    def generate(self, types, duration, workload):
+        """Generates a pseudo-random sequence of telegrams using the given telegram types."""
+        assert duration > 0, "duration must be > 0"
+        assert workload > 0 and workload <= 1, "workload must be > 0 and <= 100"
         assert len(types) > 0, "no types available"
+
+        # assume 60 telegrams per second == 100% workload
+        amount = int(60 * workload * duration)
 
         result = []
         for i in range(1, amount):

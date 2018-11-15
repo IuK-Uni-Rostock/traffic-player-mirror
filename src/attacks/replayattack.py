@@ -1,5 +1,8 @@
-from src.attacks.attack_parameters import SliderType, LogPlayerType, TimeSliderType, MultipleChoiceType, TextfieldType
-from .attack import Attack
+from src.attacks.attack_parameters import (LogPlayerType, MultipleChoiceType,
+                                           SliderType, TextfieldType,
+                                           TimeSliderType)
+
+from src.attacks.attack import Attack
 
 
 class ReplayAttack(Attack):
@@ -13,7 +16,7 @@ class ReplayAttack(Attack):
                  replay_speed: SliderType(0.1, 10),
                  start_time: TextfieldType(),
                  end_time: TextfieldType(),
-                 selection_rate: SliderType(0, 1),
+                 selection_rate: SliderType(0, 100),
                  seed: TextfieldType(default=314159265359)):
         super().__init__(database, seed, target_players)
         self.__replay_speed = replay_speed
@@ -26,4 +29,4 @@ class ReplayAttack(Attack):
         if not telegrams is None:
             self._manipulator.telegrams = telegrams
             self._manipulator.adjust_time_between_telegrams(self.__replay_speed)
-            self._manipulator.filter_percentage(self.__selection_rate)
+            self._manipulator.filter_percentage(self.__selection_rate / 100)

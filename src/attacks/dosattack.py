@@ -1,5 +1,9 @@
-from src.attacks.attack_parameters import SliderType, LogPlayerType, TimeSliderType, MultipleChoiceType, TextfieldType
-from .attack import Attack
+from src.attacks.attack_parameters import (LogPlayerType, MultipleChoiceType,
+                                           SliderType, TextfieldType,
+                                           TimeSliderType)
+
+from src.generator import Generator
+from src.attacks.attack import Attack
 
 
 class DoSAttack(Attack):
@@ -11,9 +15,9 @@ class DoSAttack(Attack):
     # noinspection PyUnresolvedReferences,PyTypeChecker
     def __init__(self, database,
                  target_players: LogPlayerType(),
-                 workload: SliderType(0, 100),
+                 workload: SliderType(1, 100),
                  duration: TimeSliderType(1, 60*60*24),  # 1s-24h
-                 telegram_types: MultipleChoiceType(('Reset', 'Join')),
+                 telegram_types: MultipleChoiceType(('A_GroupValue_Write')),
                  target_addresses: TextfieldType(),
                  seed: TextfieldType(default=314159265359)):
         super().__init__(database, seed, target_players)
@@ -23,4 +27,7 @@ class DoSAttack(Attack):
         self.__target_addresses = target_addresses
 
     def prepare(self):
-        pass
+        g = Generator(self._seed)
+        telegrams = g.generate(self.__telegram_types, self.__duration, self.__workload / 100)
+        if not telegrams is None:
+            self._manipulator.telegrams = telegrams

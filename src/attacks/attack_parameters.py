@@ -25,7 +25,7 @@ class LogPlayerType(AttackParameter):
     def _extra_info(self):
         # TODO get at runtime
         return {
-            "choices": ["Logplayer-1", "Logplayer-2"]
+            "choices": ["1", "2"]
         }
 
 

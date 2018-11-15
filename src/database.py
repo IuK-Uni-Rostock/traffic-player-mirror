@@ -1,7 +1,7 @@
 import mysql.connector
 
-from .converter import APCI_TYPES, PRIORITIES, TPCI_TYPES
-from .telegram import AckTelegram, Telegram
+from src.converter import APCI_TYPES, PRIORITIES, TPCI_TYPES
+from src.telegram import AckTelegram, Telegram
 
 
 class Database:

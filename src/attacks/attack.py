@@ -1,14 +1,15 @@
 import pika
 import json
 
-from ..database import Database
-from ..manipulator import Manipulator
+from src.database import Database
+from src.manipulator import Manipulator
 
 
 class Attack:
     metadata = {}
 
     def __init__(self, database, seed, target_players):
+        self._seed = seed
         self._manipulator = Manipulator(seed)
         self._target_players = target_players
         self._db = database
@@ -33,8 +34,8 @@ class Attack:
             for t in self._manipulator.telegrams[idx:][::len(self._target_players)]:
                 channel.basic_publish(exchange='', routing_key=name, body=json.dumps(t.__dict__, default=str))
                 sent_telegrams += 1
-                # report progress
-                progress_callback((sent_telegrams / all_telegrams) * 100)
+                # FIXME: report progress
+                # progress_callback((sent_telegrams / all_telegrams) * 100)
 
         connection.close()
 
