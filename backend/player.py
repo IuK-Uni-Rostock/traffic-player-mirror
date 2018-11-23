@@ -2,7 +2,6 @@
 
 import argparse
 import json
-
 from ctypes import CDLL, CFUNCTYPE, POINTER, c_int, c_void_p, c_uint, c_ubyte, pointer, create_string_buffer
 
 import pika
@@ -25,19 +24,23 @@ ERROR_CALLBACK = CFUNCTYPE(None, c_int, c_void_p)
 # the event callback pointer to function type
 EVENT_CALLBACK = CFUNCTYPE(None, c_int, c_uint, c_void_p)
 
+# acccess port descriptor
+ap = None
 
-def telegram_received(ch, method, properties, body):
+
+def telegram_received(channel, method, properties, body):
     t = Telegram(**json.loads(body))
     cemi = t.pack()
-    print(cemi.hex())
+    print('Sending KNX telegram: {0}'.format(cemi.hex()))
     # cemi= b'\x11\x00\xBC\xE0\x35\x25\x12\x04\x01\x00\x81'
     kdrive.kdrive_ap_send(ap, cemi, len(cemi))
 
 
 def main():
+    global ap
     args = ARGS.parse_args()
 
-    # Configure the logging level and console logger
+    # Configure the logging level
     kdrive.kdrive_logger_set_level(0)
 
     # We register an error callback as a convenience logger function to
@@ -81,6 +84,8 @@ def main():
 
         # close the access port
         kdrive.kdrive_ap_close(ap)
+    else:
+        print('No KNX USB Interfaces found, exiting...')
 
     # releases the access port
     kdrive.kdrive_ap_release(ap)
