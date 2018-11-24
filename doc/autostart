@@ -1,0 +1,6 @@
+@lxpanel --profile LXDE-pi
+@pcmanfm --desktop --profile LXDE-pi
+point-rpi
+@matchbox-window-manager
+@chromium-browser --incognito --kiosk http://127.0.0.1:8080/
+@matchbox-keyboard
