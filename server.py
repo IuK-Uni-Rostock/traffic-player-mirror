@@ -1,3 +1,5 @@
+#!/usr/bin/env python3
+
 import importlib, inspect
 import logging
 import sys
@@ -8,6 +10,8 @@ from aiohttp import web
 from aiohttp_index import IndexMiddleware
 from src.attacks import attacks
 from src.database import Database
+
+logger = logging.getLogger('traffic-player')
 
 sio = socketio.AsyncServer()
 app = web.Application(middlewares=[IndexMiddleware()])
@@ -75,3 +79,8 @@ def disconnect(sid):
 
 app.router.add_get('/', index)
 app.router.add_static('/', './frontend/dist/')
+
+if __name__ == "__main__":
+    logger.setLevel(logging.DEBUG)
+    web.run_app(app)
+

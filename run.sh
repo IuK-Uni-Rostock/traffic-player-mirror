@@ -30,9 +30,6 @@ yarn install
 yarn build
 cd ..
 
-python3 -m venv venv
-. venv/bin/activate
-
 python3 -m pip install --upgrade -e .
 
-python3 app.py
+python3 server.py

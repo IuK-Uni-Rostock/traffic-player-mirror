@@ -29,8 +29,8 @@ ap = None
 
 
 def telegram_received(channel, method, properties, body):
-    t = Telegram(**json.loads(body))
-    cemi = t.pack()
+    t = Telegram(**json.loads(body.decode('ascii')))
+    cemi = bytes(t.pack())
     print('Sending KNX telegram: {0}'.format(cemi.hex()))
     # cemi= b'\x11\x00\xBC\xE0\x35\x25\x12\x04\x01\x00\x81'
     kdrive.kdrive_ap_send(ap, cemi, len(cemi))
