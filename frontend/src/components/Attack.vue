@@ -15,6 +15,8 @@
           <v-text-field v-if="p['__name__'] == 'TextfieldType'"
             :label='p.name.replace("_", " ")'
             :placeholder="String(p.default)"
+            @focus="show"
+            data-layout="normal"
             v-model="values[p.name]"
           ></v-text-field>
           <div v-if="p['__name__'] == 'TimeSliderType'">
@@ -48,6 +50,7 @@
         </v-flex>
       </v-layout>
     </v-slide-y-transition>
+      <vue-touch-keyboard :options="options" v-if="visible" :layout="layout" :cancel="hide" :accept="accept" :input="input" :next="next" />
       <v-footer class="pa-3">
         <v-spacer></v-spacer>
         <v-spacer></v-spacer>
@@ -68,6 +71,10 @@
 <script>
 import Vue from 'vue'
 import TimeSlider from './TimeSlider'
+import VueTouchKeyboard from "vue-touch-keyboard";
+import style from "vue-touch-keyboard/dist/vue-touch-keyboard.css"; // load default style
+
+ Vue.use(VueTouchKeyboard);
 
 export default {
   name: 'Attack',
@@ -79,7 +86,14 @@ export default {
     status: Number
   },
   data: function() {return {
-    values: {}
+      values: {},
+      visible: false,
+      layout: "normal",
+      input: null,
+      options: {
+        useKbEvents: true,
+        preventClickEvent: true
+      }
   }},
   mounted: function() {
     for (let p of this.attack.parameters) {
@@ -94,6 +108,37 @@ export default {
     stopAttack: function() {
        window.sio.emit('stop attack', this.attack["__name__"]);
     },
+    accept(text) {
+       this.hide();
+       let input = this.input;
+       setTimeout(function(){input.value = text;}, 200);
+    },
+    show(e) {
+       this.input = e.target;
+       this.layout = e.target.dataset.layout;
+
+       if (!this.visible)
+          this.visible = true
+    },
+    hide() {
+       this.visible = false;
+    },
+    next() {
+       let inputs = document.querySelectorAll("input");
+       let found = false;
+       [].forEach.call(inputs, (item, i) => {
+          if (!found && item == this.input && i < inputs.length - 1) {
+             found = true;
+             this.$nextTick(() => {
+                inputs[i+1].focus();
+             });
+          }
+       });
+       if (!found) {
+          this.input.blur();
+          this.hide();
+       }
+    }
   }
 }
 </script>
@@ -103,7 +148,12 @@ export default {
 .v-label {
     text-transform:capitalize;
 }
-
+.keyboard {
+   position: fixed;
+   bottom: 0;
+   width: 50%;
+   z-index: 9;
+}
 .layout .flex {
   width: 70vw;
   padding: 4vh 0;

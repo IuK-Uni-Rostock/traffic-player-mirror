@@ -11,6 +11,7 @@
     "@babel/polyfill": "^7.0.0-rc.1",
     "socket.io-client": "^2.1.1",
     "vue": "^2.5.17",
+    "vue-touch-keyboard": "^0.3.0",
     "vuetify": "^1.2.0"
   },
   "devDependencies": {
