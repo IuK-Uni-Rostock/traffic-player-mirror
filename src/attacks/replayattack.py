@@ -14,8 +14,8 @@ class ReplayAttack(Attack):
     def __init__(self, database,
                  target_players: LogPlayerType(),
                  replay_speed: SliderType(0.1, 10),
-                 start_time: TextfieldType(),
-                 end_time: TextfieldType(),
+                 start_time: TextfieldType(default="2018-11-20 09:00:00.000000"),
+                 end_time: TextfieldType(default="2018-11-20 09:15:00.000000"),
                  selection_rate: SliderType(0, 100),
                  seed: TextfieldType(default=314159265359)):
         super().__init__(database, seed, target_players)

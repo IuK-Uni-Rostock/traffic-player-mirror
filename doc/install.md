@@ -11,13 +11,10 @@
 1. Run `python3 setup.py install`
 2. Run `pip3 install git+https://github.com/takeshixx/knxmap.git`
 
-## 4. Install virtual keyboard
-1. Run `sudo apt install matchbox-window-manager matchbox-keyboard`
-
-## 5. Running
+## 4. Running
 1. Use `run.sh`, the backend server is listening on `0.0.0.0:8080`
 
-## 6. Autorun
+## 5. Autorun
 1. Copy the autorun file to the correct destination `cp traffic-player/doc/autostart ~/.config/lxsession/LXDE-pi/autostart` 
 
 # Installation of Traffic Player on Raspbian
