@@ -37,7 +37,7 @@ async def error(msg):
 @sio.on('start attack')
 async def start_attack(sid, name, params):
     print("Starting attack", name, params)
-    sys.path.insert(0, os.path.abspath(os.path.dirname(os.path.realpath(__file__)) + '/../config'))
+    sys.path.insert(0, os.path.abspath(os.path.dirname(os.path.realpath(__file__)) + '/config'))
     db_config = importlib.import_module('config')
     db = Database(db_config.db_cfg, 'log_kzh')
     args = [db]
