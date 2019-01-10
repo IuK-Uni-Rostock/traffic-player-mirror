@@ -13,6 +13,7 @@ ARGS = argparse.ArgumentParser(description='Sends received messages on the KNX b
 
 ARGS.add_argument('-p', '--player', action='store', dest='player_id', type=int, help='player id', required=True)
 ARGS.add_argument('-q', '--queue', action='store', dest='queue_ip', type=str, help='queue ip', required=True)
+ARGS.add_argument('-d', '--device', action='store', dest='device_index', type=int, help='device index (usually 0)', required=True)
 
 kdrive = CDLL('/usr/local/lib/libkdriveExpress.so')
 
@@ -67,8 +68,7 @@ def main():
     iface_count = kdrive.kdrive_ap_enum_usb(ap)
     print('Found {0} KNX USB Interfaces'.format(iface_count))
 
-    # If we found at least 1 interface we simply open the first one (i.e. index 0)
-    if ((iface_count > 0) and (kdrive.kdrive_ap_open_usb(ap, 0) == 0)):
+    if ((iface_count > 0) and (kdrive.kdrive_ap_open_usb(ap, args.device_index) == 0)):
         # Connect the Packet Trace logging mechanism
         # to see the Rx and Tx packets
         if DEBUG:
