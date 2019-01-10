@@ -15,7 +15,7 @@
 1. Use `run.sh`, the backend server is listening on `0.0.0.0:8080`
 
 ## 5. Autorun
-1. Copy the autorun file to the correct destination `cp traffic-player/doc/autostart ~/.config/lxsession/LXDE-pi/autostart`
+1. Automatically start Chromium on boot: `echo "@chromium-browser --incognito --kiosk http://127.0.0.1:8080/" >> ~/.config/lxsession/LXDE-pi/autostart`
 2. Edit crontab with `crontab -e`
 3. Add these lines (it might be necessary to edit the script path):
 
@@ -38,15 +38,7 @@ PATH=/sbin:/bin:/usr/sbin:/usr/bin:/usr/local/bin:/usr/local/sbin
 1. The traffic-player can be run with `traffic-player/backend/player.py -p <player-id> -q <backend-ip> -d <knx-device-index>`
 
 ## 3. Autorun
-1. Edit crontab with `crontab -e`
-2. Add these lines (it might be necessary to edit the script path):
-
-```sh
-PATH=/sbin:/bin:/usr/sbin:/usr/bin:/usr/local/bin:/usr/local/sbin
-
-@reboot python3 /home/pi/traffic-player/player.py -q 192.168.0.10 -p 1 -d 0
-@reboot python3 /home/pi/traffic-player/player.py -q 192.168.0.10 -p 2 -d 1
-```
-
-3. Make sure crontab service is enabled and running: `systemctl status cron.service`
-
+1. Copy the service files to the correct directory `cp traffic-player/doc/player* ~/.config/systemd/user` (it might be necessary to create the directory first)
+2. Reload systemd `systemctl --user daemon-reload`
+3. Enable the services `systemctl --user enable player1.service` and `systemctl --user enable player2.service`
+4. Reboot `sudo reboot now`

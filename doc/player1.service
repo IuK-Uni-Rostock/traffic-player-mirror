@@ -1,0 +1,12 @@
+[Unit]
+Description=traffic-player1
+After=network-online.target
+Wants=network-online.target
+
+[Service]
+WorkingDirectory=/home/pi/traffic-player
+ExecStart=/usr/bin/python3 /home/pi/traffic-player/player.py -q 192.168.0.10 -p 1 -d 0
+Restart=always
+
+[Install]
+WantedBy=default.target
