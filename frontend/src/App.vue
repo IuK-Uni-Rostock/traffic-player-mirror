@@ -26,7 +26,7 @@
     >
       <v-list>
         <v-list-tile v-for="a in attacks" :key="JSON.stringify(a)"
-          :value="selectedAttack['__name__'] == a['__name__']" @click="selectedAttack = a">
+          :value="selectedAttack['__name__'] == a['__name__']" @click="selectedAttack = a; drawer = !drawer">
           <v-list-tile-action>
             <v-icon v-html="a.icon"></v-icon>
           </v-list-tile-action>
