@@ -49,3 +49,8 @@ class Manipulator:
         assert len(telegram_types) > 0, "at least one telegram type must be given"
 
         self.telegrams[:] = [t for t in self.telegrams if t.apci in telegram_types]
+
+    def mergenewtelegrams(self, newtelegrams):
+        """Merges newtelegrams into existing telegrams and maintains order of timestamps
+        """
+# TODO

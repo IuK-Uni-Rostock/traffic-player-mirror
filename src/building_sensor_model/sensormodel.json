@@ -1,0 +1,66 @@
+{
+  "Notes": [
+    {
+      "Name": "A",
+      "Source": "3.2.1",
+      "Dest": "1/7/1"
+    },
+    {
+      "Name": "B",
+      "Source": "3.2.2",
+      "Dest": "1/7/1"
+    },
+    {
+      "Name": "C",
+      "Source": "3.2.3",
+      "Dest": "1/7/1"
+    },
+    {
+      "Name": "D",
+      "Source": "3.2.4",
+      "Dest": "1/7/1"
+    },
+    {
+      "Name": "E",
+      "Source": "3.2.5",
+      "Dest": "1/7/1"
+    }
+  ],
+  "Edges": [
+    {
+      "Nodes": {
+        "Node1": "A",
+        "Node2": "B"
+      },
+      "Distance": 4.8
+    },
+    {
+      "Nodes": {
+        "Node1": "B",
+        "Node2": "C"
+      },
+      "Distance": 6.2
+    },
+    {
+      "Nodes": {
+        "Node1": "C",
+        "Node2": "D"
+      },
+      "Distance": 5.6
+    },
+    {
+      "Nodes": {
+        "Node1": "C",
+        "Node2": "E"
+      },
+      "Distance": 3.5
+    },
+    {
+      "Nodes": {
+        "Node1": "E",
+        "Node2": "A"
+      },
+      "Distance": 12
+    }
+  ]
+}
