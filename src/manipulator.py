@@ -50,7 +50,29 @@ class Manipulator:
 
         self.telegrams[:] = [t for t in self.telegrams if t.apci in telegram_types]
 
-    def mergenewtelegrams(self, newtelegrams):
-        """Merges newtelegrams into existing telegrams and maintains order of timestamps
+    def merge(self, telegram_sequence):
+        """Merges a squence of telegrams into existing telegrams and maintains the order of timestamps.
+
+        Assumes the timestamps of the sequence are ordered.
         """
-# TODO
+        assert len(self.telegrams) > 0, "no telegrams available"
+        assert len(telegram_sequence) > 0, "telegram sequence must not be empty"
+
+        for telegram_to_insert in telegram_sequence:
+            elapsed_time = 0
+            index = -1
+            last_timestamp = self.telegrams[0].timestamp
+
+            for idx, telegram in enumerate(self.telegrams):
+                elapsed_time += (last_timestamp - telegram.timestamp).total_seconds()
+                if telegram_to_insert.timestamp >= elapsed_time:
+                    telegram_to_insert.timestamp = (last_timestamp - telegram.timestamp).total_seconds() / 2
+                    index = idx
+                    break
+                last_timestamp = telegram.timestamp
+
+            if index >= 0:
+                self.telegrams.insert(index, telegram_to_insert)
+            else:
+                # when the elapsed time is too small, just append the telegram at the end
+                self.telegrams.append(telegram_to_insert)

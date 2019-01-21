@@ -9,6 +9,7 @@ setup(
         'aiohttp-index',
         'python-socketio',
         'mysql-connector',
-        'pika'
+        'pika',
+        'networkx'
     ],
 )
