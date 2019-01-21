@@ -29,8 +29,8 @@ class WalkingPerson(Attack):
         self.__end_time = end_time
         self.__scenario = scenario
 
-    def __create_scenario(self, scenario_id):
-        if scenario_id == 1:
+    def __execute_scenario(self):
+        if self.__scenario == 1:
             sensor1 = MotionSensor('3.2.1', '1/7/1', 10)
             sensor2 = MotionSensor('3.2.2', '1/7/1', 10)
             sensor3 = MotionSensor('3.2.3', '1/7/1', 10)
@@ -70,13 +70,13 @@ class WalkingPerson(Attack):
             G.add_edge(18, 3,  weight=1)
 
             wg = WalkGenerator(G, self._seed)
-            return wg
+            motion_telegrams = wg.generate(self.__walking_speed, self.__jitter, 1, 12)
+            return motion_telegrams
         else:
             return None
 
     def prepare(self):
-        wg = self.__create_scenario(self.__scenario)
-        motion_telegrams = wg.generate(self.__walking_speed, self.__jitter, 1, 12)
+        motion_telegrams = self.__execute_scenario()
         telegrams = self._db.get_telegrams(self.__start_time, self.__end_time)
         if (not telegrams is None) and (not motion_telegrams is None):
             self._manipulator.telegrams = telegrams
