@@ -20,13 +20,16 @@ class Manipulator:
         assert multiplier > 0, "multiplier must be > 0"
         assert len(self.telegrams) > 0, "no telegrams available"
 
+        last_timestamp = self.telegrams[0].timestamp
         for idx, telegram in enumerate(self.telegrams):
-            if idx > 0 and idx + 1 < len(self.telegrams):
-                t_prev = self.telegrams[idx - 1].timestamp
+            if idx > 0:
+                t_prev = last_timestamp
                 t_curr = telegram.timestamp
                 delta = t_curr - t_prev
                 adjustment = timedelta(seconds=multiplier * delta.total_seconds())
-                self.telegrams[idx - 1].timestamp = t_prev - adjustment
+                last_timestamp = telegram.timestamp
+                #self.telegrams[idx].timestamp = t_prev + adjustment
+                self.telegrams[idx].timestamp = self.telegrams[idx - 1].timestamp + adjustment
 
     def filter_percentage(self, selection_rate):
         """Filters the telegrams based on the selection rate.
