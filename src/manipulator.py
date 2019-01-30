@@ -58,19 +58,19 @@ class Manipulator:
         assert len(self.telegrams) > 0, "no telegrams available"
         assert len(telegram_sequence) > 0, "telegram sequence must not be empty"
 
+        first_timestamp = self.telegrams[0].timestamp
         for telegram_to_insert in telegram_sequence:
-            elapsed_time = 0
             index = -1
-            last_timestamp = self.telegrams[0].timestamp
 
             for idx, telegram in enumerate(self.telegrams):
-                elapsed_time += (last_timestamp - telegram.timestamp).total_seconds()
-                if telegram_to_insert.timestamp >= elapsed_time:
-                    telegram_to_insert.timestamp = (last_timestamp - telegram.timestamp).total_seconds() / 2
+                elapsed_time = (telegram.timestamp - first_timestamp).total_seconds()
+                #print("elapsed_time: {0}, timestamp: {1}".format(elapsed_time, telegram_to_insert.timestamp))
+                if telegram_to_insert.timestamp < elapsed_time:
                     index = idx
                     break
-                last_timestamp = telegram.timestamp
 
+            # adjust new timestamp
+            telegram_to_insert.timestamp = first_timestamp + timedelta(seconds=int(telegram_to_insert.timestamp))
             if index >= 0:
                 self.telegrams.insert(index, telegram_to_insert)
             else:
