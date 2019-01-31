@@ -8,12 +8,12 @@ import pika
 
 from src.telegram import Telegram
 
-ARGS = argparse.ArgumentParser(description='Sends received messages on the KNX bus',
+ARGS = argparse.ArgumentParser(description="Sends received messages on the KNX bus. If the argument 'device' is missing, the debug mode will be used which means no telegrams will be sent to the KNX bus, they will only be output to stdout.",
                                formatter_class=argparse.ArgumentDefaultsHelpFormatter)
 
 ARGS.add_argument('-p', '--player', action='store', dest='player_id', type=int, help='player id', required=True)
 ARGS.add_argument('-q', '--queue', action='store', dest='queue_ip', type=str, help='queue ip', required=True)
-ARGS.add_argument('-d', '--device', action='store', dest='device_index', type=int, help='device index (usually 0)', required=True)
+ARGS.add_argument('-d', '--device', action='store', dest='device_index', type=int, help='device index (usually 0)', required=False)
 
 kdrive = CDLL('/usr/local/lib/libkdriveExpress.so')
 
@@ -34,13 +34,25 @@ def telegram_received(channel, method, properties, body):
     cemi = bytes(t.pack())
     print('Sending KNX telegram: {0}'.format(cemi.hex()))
     # cemi= b'\x11\x00\xBC\xE0\x35\x25\x12\x04\x01\x00\x81'
-    kdrive.kdrive_ap_send(ap, cemi, len(cemi))
+    if not DEBUG:
+        kdrive.kdrive_ap_send(ap, cemi, len(cemi))
 
 
 def main():
-    global ap
+    global ap, DEBUG
     args = ARGS.parse_args()
+    print("Starting traffic-player using player id {0}".format(args.player_id))
 
+    DEBUG = args.device_index is None
+    if not DEBUG:
+        print("Starting live mode...")
+        start_live_mode(args)
+    else:
+        print("No device index given, starting debug mode...")
+        start_debug_mode(args)
+
+
+def start_live_mode(args):
     # Configure the logging level
     kdrive.kdrive_logger_set_level(0)
 
@@ -69,10 +81,10 @@ def main():
     print('Found {0} KNX USB Interfaces'.format(iface_count))
 
     if ((iface_count > 0) and (kdrive.kdrive_ap_open_usb(ap, args.device_index) == 0)):
+        print("Using device with index {0}".format(args.device_index))
         # Connect the Packet Trace logging mechanism
         # to see the Rx and Tx packets
-        if DEBUG:
-            kdrive.kdrive_ap_packet_trace_connect(ap)
+        # kdrive.kdrive_ap_packet_trace_connect(ap)
 
         connection = pika.BlockingConnection(pika.ConnectionParameters(args.queue_ip))
         channel = connection.channel()
@@ -91,6 +103,16 @@ def main():
     kdrive.kdrive_ap_release(ap)
 
 
+def start_debug_mode(args):
+    connection = pika.BlockingConnection(pika.ConnectionParameters(args.queue_ip))
+    channel = connection.channel()
+    name = 'traffic-player-{0}'.format(args.player_id)
+    channel.queue_declare(queue=name)
+    channel.basic_consume(telegram_received, queue=name, no_ack=True)
+    print('Waiting for messages. To exit press CTRL+C')
+    channel.start_consuming()
+
+
 def on_error_callback(e, user_data):
     len = 1024
     str = create_string_buffer(len)
@@ -104,4 +126,3 @@ def on_event_callback(ap, e, user_data):
 
 if __name__ == '__main__':
     main()
-
