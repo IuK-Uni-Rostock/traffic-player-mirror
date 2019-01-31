@@ -33,7 +33,7 @@ class Attack:
             channel = connection.channel()
             name = 'traffic-player-{0}'.format(player)
             channel.queue_declare(queue=name)
-            player_queues.append(channel)
+            player_queues.append((name, channel))
 
         last_telegram_timestamp = self._manipulator.telegrams[0]
         for idx, telegram in enumerate(self._manipulator.telegrams):
@@ -42,7 +42,7 @@ class Attack:
             timespan = telegram.timestamp - last_telegram_timestamp
             if timespan.total_seconds() > 0:
                 time.sleep(timespan.total_seconds())
-            player_queues[queue_id].basic_publish(exchange='', routing_key=name, body=json.dumps(t.__dict__, default=str))
+            player_queues[queue_id][1].basic_publish(exchange='', routing_key=player_queues[queue_id][0], body=json.dumps(t.__dict__, default=str))
             sent_telegrams += 1
             last_telegram_timestamp = telegram.timestamp
             # FIXME: report progress
