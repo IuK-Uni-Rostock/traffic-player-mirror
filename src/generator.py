@@ -47,5 +47,5 @@ class Generator:
             t.payload_data = 0
         t.apci = telegram_type
         t.extended_frame = 0
-        t.timestamp = datetime.now().strftime("%Y-%m-%d %H:%M:%S.%f")
+        t.timestamp = datetime.now()
         return t

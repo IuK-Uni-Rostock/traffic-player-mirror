@@ -1,5 +1,6 @@
 import pika
 import json
+import time
 
 from src.database import Database
 from src.manipulator import Manipulator
@@ -19,23 +20,33 @@ class Attack:
         raise NotImplementedError
 
     def start(self, progress_callback):
+        # TODO: use new thread or async io
         assert len(self._target_players) > 0, "No target players available"
         assert len(self._manipulator.telegrams) > 0, "No telegrams available"
 
         all_telegrams = len(self._manipulator.telegrams)
         sent_telegrams = 0
         connection = pika.BlockingConnection(pika.ConnectionParameters('127.0.0.1')) # TODO change to parameter
-        for idx, player in enumerate(self._target_players):
+
+        player_queues = []
+        for player in self._target_players):
             channel = connection.channel()
             name = 'traffic-player-{0}'.format(player)
             channel.queue_declare(queue=name)
+            player_queues.append(channel)
 
+        last_telegram_timestamp = self._manipulator.telegrams[0]
+        for idx, telegram in enumerate(self._manipulator.telegrams):
             # split telegrams equally between all target players
-            for t in self._manipulator.telegrams[idx:][::len(self._target_players)]:
-                channel.basic_publish(exchange='', routing_key=name, body=json.dumps(t.__dict__, default=str))
-                sent_telegrams += 1
-                # FIXME: report progress
-                # progress_callback((sent_telegrams / all_telegrams) * 100)
+            queue_id = idx % len(self._target_players)
+            timespan = telegram.timestamp - last_telegram_timestamp
+            if timespan.total_seconds() > 0:
+                time.sleep(timespan.total_seconds())
+            player_queues[queue_id].basic_publish(exchange='', routing_key=name, body=json.dumps(t.__dict__, default=str))
+            sent_telegrams += 1
+            last_telegram_timestamp = telegram.timestamp
+            # FIXME: report progress
+            # progress_callback((sent_telegrams / all_telegrams) * 100)
 
         connection.close()
 
