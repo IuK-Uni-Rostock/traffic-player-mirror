@@ -42,7 +42,7 @@ class Attack:
             timespan = telegram.timestamp - last_telegram_timestamp
             if timespan.total_seconds() > 0:
                 time.sleep(timespan.total_seconds())
-            player_queues[queue_id][1].basic_publish(exchange='', routing_key=player_queues[queue_id][0], body=json.dumps(t.__dict__, default=str))
+            player_queues[queue_id][1].basic_publish(exchange='', routing_key=player_queues[queue_id][0], body=json.dumps(telegram.__dict__, default=str))
             sent_telegrams += 1
             last_telegram_timestamp = telegram.timestamp
             # FIXME: report progress
