@@ -29,13 +29,13 @@ class Attack:
         connection = pika.BlockingConnection(pika.ConnectionParameters('127.0.0.1')) # TODO change to parameter
 
         player_queues = []
-        for player in self._target_players):
+        for player in self._target_players:
             channel = connection.channel()
             name = 'traffic-player-{0}'.format(player)
             channel.queue_declare(queue=name)
             player_queues.append((name, channel))
 
-        last_telegram_timestamp = self._manipulator.telegrams[0]
+        last_telegram_timestamp = self._manipulator.telegrams[0].timestamp
         for idx, telegram in enumerate(self._manipulator.telegrams):
             # split telegrams equally between all target players
             queue_id = idx % len(self._target_players)
