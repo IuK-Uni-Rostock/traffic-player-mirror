@@ -1,6 +1,6 @@
 from src.attacks.attack_parameters import (LogPlayerType, MultipleChoiceType,
                                            SliderType, TextfieldType,
-                                           TimeSliderType)
+                                           TimeSliderType, SingleChoiceType)
 
 from src.attacks.attack import Attack
 from src.walkgenerator import MotionSensor, WalkGenerator
@@ -20,7 +20,7 @@ class WalkingPerson(Attack):
                  jitter: SliderType(0, 10, default=1),
                  start_time: TextfieldType(default="2018-11-20 09:00:00.000000"),
                  end_time: TextfieldType(default="2018-11-20 09:15:00.000000"),
-                 scenario: MultipleChoiceType((1)),
+                 scenario: SingleChoiceType((1)),
                  seed: TextfieldType(default=314159265359)):
         super().__init__(database, seed, target_players)
         self.__walking_speed = walking_speed
