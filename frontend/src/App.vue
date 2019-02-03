@@ -44,10 +44,7 @@
     </v-toolbar>
     <v-content>
       <Attack v-for="a in this.attacks" :key="a.name" :status="runningAttacks[a['__name__']]" :attack="a" v-show="a.name == selectedAttack.name"/>
-
     </v-content>
-
- 
   </v-app>
 </template>
 
@@ -78,15 +75,15 @@ export default {
     window.sio.on('attacks', a => {
       Vue.set(this, 'attacks', a);
       Vue.set(this, 'selectedAttack', a[0]);
-      });
-      window.sio.on('attack status', a => {
-        console.log(a);
-        this.runningAttacks[a["name"]] = a["status"];
-      })
-      window.sio.on('error', a => {
-        this.snackbar = true;
-        this.errorText = a;
-      })
+    });
+    window.sio.on('attack status', a => {
+      console.log(a);
+      this.runningAttacks[a["name"]] = a["status"];
+    });
+    window.sio.on('error', a => {
+      this.snackbar = true;
+      this.errorText = a;
+    });
     window.sio.emit('get attacks');
   }
 }

@@ -1,6 +1,9 @@
-import pika
+import asyncio
 import json
+import math
 import time
+
+import pika
 
 from src.database import Database
 from src.manipulator import Manipulator
@@ -19,14 +22,14 @@ class Attack:
         """Subclasses must define this method."""
         raise NotImplementedError
 
-    def start(self, progress_callback):
-        # TODO: use new thread or async io
+    async def start(self, progress_callback):
         assert len(self._target_players) > 0, "No target players available"
         assert len(self._manipulator.telegrams) > 0, "No telegrams available"
 
         all_telegrams = len(self._manipulator.telegrams)
         sent_telegrams = 0
-        connection = pika.BlockingConnection(pika.ConnectionParameters('127.0.0.1')) # TODO change to parameter
+        status = 0
+        connection = pika.BlockingConnection(pika.ConnectionParameters('127.0.0.1'))
 
         player_queues = []
         for player in self._target_players:
@@ -36,19 +39,25 @@ class Attack:
             player_queues.append((name, channel))
 
         last_telegram_timestamp = self._manipulator.telegrams[0].timestamp
-        for idx, telegram in enumerate(self._manipulator.telegrams):
-            # split telegrams equally between all target players
-            queue_id = idx % len(self._target_players)
-            timespan = telegram.timestamp - last_telegram_timestamp
-            if timespan.total_seconds() > 0:
-                time.sleep(timespan.total_seconds())
-            player_queues[queue_id][1].basic_publish(exchange='', routing_key=player_queues[queue_id][0], body=json.dumps(telegram.__dict__, default=str))
-            sent_telegrams += 1
-            last_telegram_timestamp = telegram.timestamp
-            # FIXME: report progress
-            # progress_callback((sent_telegrams / all_telegrams) * 100)
-
-        connection.close()
+        try:
+            for idx, telegram in enumerate(self._manipulator.telegrams):
+                # split telegrams equally between all target players
+                queue_id = idx % len(self._target_players)
+                timespan = telegram.timestamp - last_telegram_timestamp
+                if timespan.total_seconds() > 0:
+                    await asyncio.sleep(timespan.total_seconds())
+                player_queues[queue_id][1].basic_publish(exchange='', routing_key=player_queues[queue_id][0], body=json.dumps(telegram.__dict__, default=str))
+                sent_telegrams += 1
+                last_telegram_timestamp = telegram.timestamp
+                if math.floor((sent_telegrams / all_telegrams) * 100) > status:
+                    status = math.floor((sent_telegrams / all_telegrams) * 100)
+                    await progress_callback(status)
+        except:
+            raise
+        finally:
+            # attack finished
+            await progress_callback(-1)
+            connection.close()
 
     @classmethod
     def get_attack_info(cls):

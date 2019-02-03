@@ -56,12 +56,12 @@
         <v-spacer></v-spacer>
         <h3 v-show="status > 0">Angriff läuft</h3>
         <v-spacer></v-spacer>
-        <v-progress-linear v-model="status" style="width: 20vw" v-if="status > 0"></v-progress-linear>
+        <v-progress-linear v-bind:value="status" style="width: 20vw" v-if="status > 0"></v-progress-linear>
         <v-spacer></v-spacer>
-        <v-btn fab dark small :disabled="status == undefined" @click="stopAttack()">
+        <v-btn fab dark small :disabled="status == undefined || status < 0" @click="stopAttack()">
           <v-icon dark>stop</v-icon>
         </v-btn>
-        <v-btn fab dark small color="primary" :disabled="status != undefined" @click="startAttack()">
+        <v-btn fab dark small color="primary" :disabled="status > 0" @click="startAttack()">
           <v-icon dark>mdi-play</v-icon>
         </v-btn>
     </v-footer>
@@ -74,7 +74,7 @@ import TimeSlider from './TimeSlider'
 import VueTouchKeyboard from "vue-touch-keyboard";
 import style from "vue-touch-keyboard/dist/vue-touch-keyboard.css"; // load default style
 
- Vue.use(VueTouchKeyboard);
+Vue.use(VueTouchKeyboard);
 
 export default {
   name: 'Attack',
@@ -83,7 +83,7 @@ export default {
   },
   props: {
     attack: Object,
-    status: Number
+    status: -1
   },
   data: function() {return {
       values: {},
