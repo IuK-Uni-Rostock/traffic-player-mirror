@@ -79,6 +79,7 @@ export default {
     window.sio.on('attack status', a => {
       console.log(a);
       this.runningAttacks[a["name"]] = a["status"];
+      this.$forceUpdate();
     });
     window.sio.on('error', a => {
       this.snackbar = true;
