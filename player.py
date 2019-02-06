@@ -55,6 +55,7 @@ def main():
 
 
 def start_live_mode(args):
+    global ap
     # Configure the logging level
     kdrive.kdrive_logger_set_level(0)
 
