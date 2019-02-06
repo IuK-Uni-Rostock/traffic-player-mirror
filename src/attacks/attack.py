@@ -28,7 +28,7 @@ class Attack:
 
         all_telegrams = len(self._manipulator.telegrams)
         sent_telegrams = 0
-        status = 0
+        status = 1
         connection = pika.BlockingConnection(pika.ConnectionParameters('127.0.0.1'))
 
         player_queues = []
@@ -40,6 +40,7 @@ class Attack:
 
         last_telegram_timestamp = self._manipulator.telegrams[0].timestamp
         try:
+            await progress_callback(status)
             for idx, telegram in enumerate(self._manipulator.telegrams):
                 # split telegrams equally between all target players
                 queue_id = idx % len(self._target_players)

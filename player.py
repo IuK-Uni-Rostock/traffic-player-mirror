@@ -1,6 +1,7 @@
 #!/usr/bin/env python3
 
 import argparse
+from datetime import datetime
 import json
 from ctypes import CDLL, CFUNCTYPE, POINTER, c_int, c_void_p, c_uint, c_ubyte, pointer, create_string_buffer
 
@@ -32,7 +33,8 @@ ap = None
 def telegram_received(channel, method, properties, body):
     t = Telegram(**json.loads(body.decode('ascii')))
     cemi = bytes(t.pack())
-    print('Sending KNX telegram: {0}'.format(cemi.hex()))
+    timestamp = datetime.now().strftime("%Y-%m-%d %H:%M:%S.%f")
+    print("{0} {1}".format(timestamp, cemi.hex()))
     # cemi= b'\x11\x00\xBC\xE0\x35\x25\x12\x04\x01\x00\x81'
     if not DEBUG:
         kdrive.kdrive_ap_send(ap, cemi, len(cemi))
