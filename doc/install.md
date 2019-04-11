@@ -15,7 +15,7 @@
 1. Use `run.sh`, the backend server is listening on `0.0.0.0:8080`
 
 ## 5. Autorun
-1. Automatically start Chromium on boot: `echo "@chromium-browser --incognito --kiosk http://127.0.0.1:8080/" >> ~/.config/lxsession/LXDE-pi/autostart`
+1. Automatically start Chromium on boot: `sudo echo "@chromium-browser --incognito --kiosk http://127.0.0.1:8080/" >> /etc/xdg/lxsession/LXDE-pi/autostart`
 2. Edit crontab with `crontab -e`
 3. Add these lines (it might be necessary to edit the script path):
 

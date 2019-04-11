@@ -93,7 +93,7 @@ def start_live_mode(args):
         channel = connection.channel()
         name = 'traffic-player-{0}'.format(args.player_id)
         channel.queue_declare(queue=name)
-        channel.basic_consume(telegram_received, queue=name, no_ack=True)
+        channel.basic_consume(name, telegram_received, auto_ack=False)
         print('Waiting for messages. To exit press CTRL+C')
         channel.start_consuming()
 
@@ -111,7 +111,7 @@ def start_debug_mode(args):
     channel = connection.channel()
     name = 'traffic-player-{0}'.format(args.player_id)
     channel.queue_declare(queue=name)
-    channel.basic_consume(telegram_received, queue=name, no_ack=True)
+    channel.basic_consume(name, telegram_received, auto_ack=False)
     print('Waiting for messages. To exit press CTRL+C')
     channel.start_consuming()
 
