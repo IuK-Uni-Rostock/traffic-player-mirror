@@ -54,7 +54,7 @@
       <v-footer class="pa-3">
         <v-spacer></v-spacer>
         <v-spacer></v-spacer>
-        <h3 v-show="status > 0">Angriff läuft</h3>
+        <h3 v-show="status > 0">Attack running</h3>
         <v-spacer></v-spacer>
         <v-progress-linear v-bind:value="status" style="width: 20vw" v-if="status > 0"></v-progress-linear>
         <v-spacer></v-spacer>
@@ -72,7 +72,7 @@
 import Vue from 'vue'
 import TimeSlider from './TimeSlider'
 import VueTouchKeyboard from "vue-touch-keyboard";
-import style from "vue-touch-keyboard/dist/vue-touch-keyboard.css"; // load default style
+import "vue-touch-keyboard/dist/vue-touch-keyboard.css"; // load default style
 
 Vue.use(VueTouchKeyboard);
 
@@ -91,8 +91,8 @@ export default {
       layout: "normal",
       input: null,
       options: {
-        useKbEvents: true,
-        preventClickEvent: true
+        useKbEvents: false,
+        preventClickEvent: false
       }
   }},
   mounted: function() {
@@ -110,8 +110,6 @@ export default {
     },
     accept(text) {
        this.hide();
-       let input = this.input;
-       setTimeout(function(){input.value = text;}, 200);
     },
     show(e) {
        this.input = e.target;
@@ -151,7 +149,7 @@ export default {
 .keyboard {
    position: fixed;
    bottom: 0;
-   width: 50%;
+   padding-right: 4%;
    z-index: 9;
 }
 .layout .flex {
