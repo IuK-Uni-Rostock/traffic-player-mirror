@@ -36,4 +36,64 @@ The so called walking persons attack simulates persons walking inside a building
 | Jitter | Float | 0.5 | The jitter describes the variance of the walking speed. A value of 0.5 means that the walking speed does vary between -0.5 m/s and 0.5 m/s. Allowed are values between 0 and 10. |
 | Start time | Datetime | 2018-11-20 09:00:00.000000 | Starting at the start time, the telegrams will be used from the database to merge with the generated motion sensor trace. |
 | End time | Datetime | 2018-11-20 09:15:00.000000 | The end time specifies the end of the time span. All telegrams between `start_time <= t <= end_time` are considered. |
-| Scenario | Integer | 1 | Describes which predefined scenario to execute with the given parameters. Currently implemented scenarios are: Scenario 1, which is scenario for testing and debugging; Scenario 2, which represents the 3rd floor of the KZH and two persons walking to their opposite sides. |
+| Scenario | Integer | 1 | Describes which predefined scenario to execute with the given parameters. Currently implemented scenarios are: Scenario 1, which is a scenario for testing and debugging; Scenario 2, which represents the 3rd floor of the KZH with two persons walking to their opposite sides. |
+
+# Implementing a new attack
+
+All implemented attacks are located in the directory `/src/attacks/`. A basic boilerplate for a new attack can be found below. The `prepare` method is used to create (prepare) all telegrams for sending. After this method has finished the telegrams get sent automatically to the traffic players which will then send the telegrams to the connected fieldbus. The `__init__` method defines the parameters for the attack and assigns the values to the correct parameters chosen by the user.
+
+Once the implementation of the new attack is done add the attack to the list of attacks in the file `/src/attacks/__init__.py`. The last step is to restart the server so all new attacks are recognized.
+
+```python
+from datetime import datetime
+
+from src.attacks.attack_parameters import (LogPlayerType, MultipleChoiceType,
+                                           SliderType, TextfieldType,
+                                           TimeSliderType, SingleChoiceType)
+
+from src.attacks.attack import Attack
+from src.telegram import Telegram
+
+
+class MyAttack(Attack):
+    metadata = {
+        "name": "My Attack",
+        "icon": "mdi-new-box"
+    }
+
+    def __init__(self, database,
+                 target_players: LogPlayerType(),
+                 # ###########################
+                 # place your custom parameters here
+                 my_param: SliderType(1, 100),
+                 # ###########################
+                 seed: TextfieldType(default=314159265359)):
+        super().__init__(database, seed, target_players)
+        self.__my_param = my_param
+
+    def prepare(self):
+        telegrams = []
+
+        # basic A_GroupValue_Write telegram
+        t = Telegram()
+        t.source_addr = '1.1.1'.
+        t.destination_addr = '1/1/1'
+        t.system_broadcast = 1
+        t.repeat = 1
+        t.priority = 3
+        t.ack_req = 0
+        t.confirm = 0
+        t.hop_count = 6
+        t.tpci = "UDP"
+        t.tpci_sequence = 0
+        t.payload_data = 1
+        t.apci = 'A_GroupValue_Write'
+        t.extended_frame = 0
+        t.timestamp = datetime.now()
+
+        telegrams.append(t)
+
+        # The list of created telegrams needs to be assigned to the manipulator.
+        self._manipulator.telegrams = telegrams
+        # (optional) The manipulator can now be used to manipulate the telegrams further.
+```
