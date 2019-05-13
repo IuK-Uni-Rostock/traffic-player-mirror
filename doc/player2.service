@@ -5,7 +5,7 @@ Wants=network-online.target
 
 [Service]
 WorkingDirectory=/home/pi/traffic-player
-ExecStart=/usr/bin/python3 /home/pi/traffic-player/player.py -q 192.168.0.10 -p 2 -d 1
+ExecStart=/home/pi/traffic-player/run-player.sh -q 192.168.0.10 -p 2 -d 1
 Restart=always
 
 [Install]

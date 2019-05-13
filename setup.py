@@ -10,6 +10,7 @@ setup(
         'python-socketio',
         'mysql-connector',
         'pika',
-        'networkx'
+        'networkx',
+        'knxmap @ git+https://github.com/takeshixx/knxmap.git'
     ],
 )
