@@ -20,7 +20,7 @@
 ```sh
 PATH=/sbin:/bin:/usr/sbin:/usr/bin:/usr/local/bin:/usr/local/sbin
 
-@reboot ./home/pi/traffic-player/run-server.sh
+@reboot /home/pi/traffic-player/run-server.sh
 ```
 
 3. Make sure crontab service is enabled and running: `systemctl status cron.service`
