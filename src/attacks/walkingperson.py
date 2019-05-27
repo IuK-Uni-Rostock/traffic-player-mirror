@@ -18,6 +18,7 @@ class WalkingPerson(Attack):
                  target_players: LogPlayerType(),
                  walking_speed: SliderType(0.1, 10),
                  jitter: SliderType(0, 10, default=1),
+                 reactivation_time: SliderType(1, 60, default=10),
                  start_time: TextfieldType(default="2018-11-20 09:00:00.000000"),
                  end_time: TextfieldType(default="2018-11-20 09:15:00.000000"),
                  scenario: SingleChoiceType((1, 2)),
@@ -25,19 +26,20 @@ class WalkingPerson(Attack):
         super().__init__(database, seed, target_players)
         self.__walking_speed = walking_speed
         self.__jitter = jitter
+        self.__reactivation_time = reactivation_time
         self.__start_time = start_time
         self.__end_time = end_time
         self.__scenario = scenario
 
     def __execute_scenario(self):
         if self.__scenario == 1:
-            sensor1 = MotionSensor('3.2.1', '1/7/1', 10)
-            sensor2 = MotionSensor('3.2.2', '1/7/1', 10)
-            sensor3 = MotionSensor('3.2.3', '1/7/1', 10)
-            sensor4 = MotionSensor('3.2.4', '1/7/1', 10)
-            sensor5 = MotionSensor('3.2.5', '1/7/1', 10)
-            sensor6 = MotionSensor('3.2.6', '1/7/1', 10)
-            sensor7 = MotionSensor('3.2.7', '1/7/1', 10)
+            sensor1 = MotionSensor('3.2.1', '1/7/1', self.__reactivation_time)
+            sensor2 = MotionSensor('3.2.2', '1/7/1', self.__reactivation_time)
+            sensor3 = MotionSensor('3.2.3', '1/7/1', self.__reactivation_time)
+            sensor4 = MotionSensor('3.2.4', '1/7/1', self.__reactivation_time)
+            sensor5 = MotionSensor('3.2.5', '1/7/1', self.__reactivation_time)
+            sensor6 = MotionSensor('3.2.6', '1/7/1', self.__reactivation_time)
+            sensor7 = MotionSensor('3.2.7', '1/7/1', self.__reactivation_time)
 
             G = Graph()
 
@@ -70,66 +72,66 @@ class WalkingPerson(Attack):
             G.add_edge(18, 3,  weight=1)
 
             wg = WalkGenerator(G, self._seed)
-            motion_telegrams = wg.generate(self.__walking_speed, self.__jitter, 1, 12)
+            motion_telegrams = wg.generate(WalkGeneratorConfig(self.__walking_speed, self.__jitter, 1, 12))
             return motion_telegrams
         elif self.__scenario == 2:
             sensors = [
-                MotionSensor("3.5.62", "1/7/1", 10),
-                MotionSensor("3.5.52", "1/7/1", 10),
-                MotionSensor("3.5.53", "1/7/1", 10),
-                MotionSensor("3.5.61", "1/7/1", 10),
-                MotionSensor("3.5.54", "1/7/1", 10),
-                MotionSensor("3.5.55", "1/7/1", 10),
-                MotionSensor("3.6.66", "1/7/1", 10),
-                MotionSensor("3.6.11", "1/7/1", 10),
-                MotionSensor("3.6.4", "1/7/1", 10),
-                MotionSensor("3.6.5", "1/7/1", 10),
-                MotionSensor("3.6.6", "1/7/1", 10),
-                MotionSensor("3.6.7", "1/7/1", 10),
-                MotionSensor("3.6.8", "1/7/1", 10),
-                MotionSensor("3.6.9", "1/7/1", 10),
-                MotionSensor("3.6.10", "1/7/1", 10),
-                MotionSensor("3.5.67", "1/7/1", 10),
-                MotionSensor("3.6.56", "1/7/1", 10),
-                MotionSensor("3.6.57", "1/7/1", 10),
-                MotionSensor("3.5.58", "1/7/1", 10),
-                MotionSensor("3.5.59", "1/7/1", 10),
-                MotionSensor("3.6.12", "1/7/1", 10),
-                MotionSensor("3.6.42", "1/7/1", 10),
-                MotionSensor("3.3.22", "1/7/1", 10),
-                MotionSensor("3.3.23", "1/7/1", 10),
-                MotionSensor("3.3.14", "1/7/1", 10),
-                MotionSensor("3.3.15", "1/7/1", 10),
-                MotionSensor("3.3.24", "1/7/1", 10),
-                MotionSensor("3.3.25", "1/7/1", 10),
-                MotionSensor("3.2.75", "1/7/1", 10),
-                MotionSensor("3.2.74", "1/7/1", 10),
-                MotionSensor("3.2.11", "1/7/1", 10),
-                MotionSensor("3.2.12", "1/7/1", 10),
-                MotionSensor("3.2.73", "1/7/1", 10),
-                MotionSensor("3.2.3", "1/7/1", 10),
-                MotionSensor("3.2.2", "1/7/1", 10),
-                MotionSensor("3.2.1", "1/7/1", 10),
-                MotionSensor("3.2.72", "1/7/1", 10),
-                MotionSensor("3.2.71", "1/7/1", 10),
-                MotionSensor("3.2.59", "1/7/1", 10),
-                MotionSensor("3.2.6", "1/7/1", 10),
-                MotionSensor("3.2.5", "1/7/1", 10),
-                MotionSensor("3.2.19", "1/7/1", 10),
-                MotionSensor("3.2.20", "1/7/1", 10),
-                MotionSensor("3.2.21", "1/7/1", 10),
-                MotionSensor("3.2.22", "1/7/1", 10),
-                MotionSensor("3.2.23", "1/7/1", 10),
-                MotionSensor("3.2.24", "1/7/1", 10),
-                MotionSensor("3.2.25", "1/7/1", 10),
-                MotionSensor("3.2.4", "1/7/1", 10),
-                MotionSensor("3.2.70", "1/7/1", 10),
-                MotionSensor("3.2.67", "1/7/1", 10),
-                MotionSensor("3.2.8", "1/7/1", 10),
-                MotionSensor("3.2.7", "1/7/1", 10),
-                MotionSensor("3.6.47", "1/7/1", 10),
-                MotionSensor("3.6.46", "1/7/1", 10),
-                MotionSensor("3.6.31", "1/7/1", 10)
+                MotionSensor("3.5.62", "1/7/1", self.__reactivation_time),
+                MotionSensor("3.5.52", "1/7/1", self.__reactivation_time),
+                MotionSensor("3.5.53", "1/7/1", self.__reactivation_time),
+                MotionSensor("3.5.61", "1/7/1", self.__reactivation_time),
+                MotionSensor("3.5.54", "1/7/1", self.__reactivation_time),
+                MotionSensor("3.5.55", "1/7/1", self.__reactivation_time),
+                MotionSensor("3.6.66", "1/7/1", self.__reactivation_time),
+                MotionSensor("3.6.11", "1/7/1", self.__reactivation_time),
+                MotionSensor("3.6.4", "1/7/1", self.__reactivation_time),
+                MotionSensor("3.6.5", "1/7/1", self.__reactivation_time),
+                MotionSensor("3.6.6", "1/7/1", self.__reactivation_time),
+                MotionSensor("3.6.7", "1/7/1", self.__reactivation_time),
+                MotionSensor("3.6.8", "1/7/1", self.__reactivation_time),
+                MotionSensor("3.6.9", "1/7/1", self.__reactivation_time),
+                MotionSensor("3.6.10", "1/7/1", self.__reactivation_time),
+                MotionSensor("3.5.67", "1/7/1", self.__reactivation_time),
+                MotionSensor("3.6.56", "1/7/1", self.__reactivation_time),
+                MotionSensor("3.6.57", "1/7/1", self.__reactivation_time),
+                MotionSensor("3.5.58", "1/7/1", self.__reactivation_time),
+                MotionSensor("3.5.59", "1/7/1", self.__reactivation_time),
+                MotionSensor("3.6.12", "1/7/1", self.__reactivation_time),
+                MotionSensor("3.6.42", "1/7/1", self.__reactivation_time),
+                MotionSensor("3.3.22", "1/7/1", self.__reactivation_time),
+                MotionSensor("3.3.23", "1/7/1", self.__reactivation_time),
+                MotionSensor("3.3.14", "1/7/1", self.__reactivation_time),
+                MotionSensor("3.3.15", "1/7/1", self.__reactivation_time),
+                MotionSensor("3.3.24", "1/7/1", self.__reactivation_time),
+                MotionSensor("3.3.25", "1/7/1", self.__reactivation_time),
+                MotionSensor("3.2.75", "1/7/1", self.__reactivation_time),
+                MotionSensor("3.2.74", "1/7/1", self.__reactivation_time),
+                MotionSensor("3.2.11", "1/7/1", self.__reactivation_time),
+                MotionSensor("3.2.12", "1/7/1", self.__reactivation_time),
+                MotionSensor("3.2.73", "1/7/1", self.__reactivation_time),
+                MotionSensor("3.2.3", "1/7/1", self.__reactivation_time),
+                MotionSensor("3.2.2", "1/7/1", self.__reactivation_time),
+                MotionSensor("3.2.1", "1/7/1", self.__reactivation_time),
+                MotionSensor("3.2.72", "1/7/1", self.__reactivation_time),
+                MotionSensor("3.2.71", "1/7/1", self.__reactivation_time),
+                MotionSensor("3.2.59", "1/7/1", self.__reactivation_time),
+                MotionSensor("3.2.6", "1/7/1", self.__reactivation_time),
+                MotionSensor("3.2.5", "1/7/1", self.__reactivation_time),
+                MotionSensor("3.2.19", "1/7/1", self.__reactivation_time),
+                MotionSensor("3.2.20", "1/7/1", self.__reactivation_time),
+                MotionSensor("3.2.21", "1/7/1", self.__reactivation_time),
+                MotionSensor("3.2.22", "1/7/1", self.__reactivation_time),
+                MotionSensor("3.2.23", "1/7/1", self.__reactivation_time),
+                MotionSensor("3.2.24", "1/7/1", self.__reactivation_time),
+                MotionSensor("3.2.25", "1/7/1", self.__reactivation_time),
+                MotionSensor("3.2.4", "1/7/1", self.__reactivation_time),
+                MotionSensor("3.2.70", "1/7/1", self.__reactivation_time),
+                MotionSensor("3.2.67", "1/7/1", self.__reactivation_time),
+                MotionSensor("3.2.8", "1/7/1", self.__reactivation_time),
+                MotionSensor("3.2.7", "1/7/1", self.__reactivation_time),
+                MotionSensor("3.6.47", "1/7/1", self.__reactivation_time),
+                MotionSensor("3.6.46", "1/7/1", self.__reactivation_time),
+                MotionSensor("3.6.31", "1/7/1", self.__reactivation_time)
             ]
 
             G = Graph()

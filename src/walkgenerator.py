@@ -7,12 +7,20 @@ from src.telegram import Telegram
 
 class MotionSensor:
     def __init__(self, source_address, destination_address, reactivation_time):
+        """Initialize a new motion sensor with given source address, destination address
+        and reactivation time in seconds. Motion can be simulated by calling the `activate`
+        method.
+        """
         self.source_address = source_address
         self.destination_address = destination_address
         self.reactivation_time = reactivation_time
         self.last_activation_time = -999999
 
     def activate(self, current_time):
+        """Simulates detected motion and emits a new sensor event if the elapsed time since
+        the last emitted sensor event is greater than the reactivation time to avoid spamming
+        of unnecessary sensor events.
+        """
         if current_time - self.last_activation_time >= self.reactivation_time:
             #print('{0} activated at time {1}'.format(self.__str__(), current_time))
             self.last_activation_time = current_time
@@ -24,8 +32,8 @@ class MotionSensor:
         is_group_address = True
         t.source_addr = sourceaddr
         t.destination_addr = destaddr
-        t.system_broadcast = 1 # constant
-        t.repeat = 1 # constant?
+        t.system_broadcast = 1
+        t.repeat = 1
         t.priority = 1
         t.ack_req = not is_group_address
         t.confirm = not is_group_address
@@ -57,14 +65,16 @@ class WalkGenerator:
         self.__telegram_sequence = []
 
     def generate_multiple(self, configs):
+        """Generates a single sensor event time series for a given list of `WalkGeneratorConfig`s.
+        """
         sensors = []
         for _, node in self.G.nodes(data=True):
             if 'sensor' in node:
                 sensors.append(node['sensor'])
 
         walks = []
-        for person in configs:
-            walks.append(self.generate(person.walking_speed, person.jitter, person.start, person.destination, person.custom_path))
+        for config in configs:
+            walks.append(self.generate(config))
 
         telegrams = [walk for walk in walks][0]
         telegrams.sort(key=lambda t: t.timestamp)
@@ -81,13 +91,15 @@ class WalkGenerator:
 
         return telegrams
 
-    def generate(self, walking_speed, jitter, start, destination, custom_path=None):
+    def generate(self, config):
+        """Generates a single sensor event time series for a given `WalkGeneratorConfig`.
+        """
         # path = [1,2,3,4,5,6,7,8,9,10,13,14,15,16,17,18,3,4,5,6,7,8,9,10,13,14,15,16,17,18,3,2,1]
         self.__reset()
-        if custom_path is None:
-            path = weighted.dijkstra_path(self.G, start, destination)
+        if config.custom_path is None:
+            path = weighted.dijkstra_path(self.G, config.start, config.destination)
         else:
-            path = custom_path
+            path = config.custom_path
 
         time = 0
 
@@ -95,8 +107,8 @@ class WalkGenerator:
         for node in path[1:]:
             self.__move(node, time)
             distance = self.G.edges[last_node, node]['weight']
-            jit = self._rng.uniform(jitter * -1, jitter)
-            time += distance / (walking_speed + jit)
+            jit = self._rng.uniform(config.jitter * -1, config.jitter)
+            time += distance / (config.walking_speed + jit)
             last_node = node
         return self.__telegram_sequence
 
