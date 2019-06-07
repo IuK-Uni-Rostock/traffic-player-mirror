@@ -5,14 +5,6 @@ cd "$(dirname "$0")" || exit
 if ! command -v python3 > /dev/null 2>&1; then
     echo "Please install python 3 to continue."
     exit
-else
-    # Check python version
-    version=$(python3 -V 2>&1 | grep -Po '(?<=Python )(.+)')
-    parsedVersion="${version//./}"
-    if [ "$parsedVersion" -lt "360" ]; then
-       echo "Please install python 3.6+ to continue."
-       exit
-    fi
 fi
 
 if ! python3 -m pip > /dev/null 2>&1; then
