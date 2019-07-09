@@ -85,20 +85,24 @@ def start_live_mode(args):
 
     if ((iface_count > 0) and (kdrive.kdrive_ap_open_usb(ap, args.device_index) == 0)):
         print("Using device with index {0}".format(args.device_index))
-        # Connect the Packet Trace logging mechanism
-        # to see the Rx and Tx packets
+        # Connect the Packet Trace logging mechanism to see the Rx and Tx packets
         # kdrive.kdrive_ap_packet_trace_connect(ap)
 
-        connection = pika.BlockingConnection(pika.ConnectionParameters(args.queue_ip))
-        channel = connection.channel()
-        name = 'traffic-player-{0}'.format(args.player_id)
-        channel.queue_declare(queue=name)
-        channel.basic_consume(name, telegram_received, auto_ack=False)
-        print('Waiting for messages. To exit press CTRL+C')
-        channel.start_consuming()
-
-        # close the access port
-        kdrive.kdrive_ap_close(ap)
+        try:
+            connection = pika.BlockingConnection(pika.ConnectionParameters(args.queue_ip))
+            channel = connection.channel()
+            name = 'traffic-player-{0}'.format(args.player_id)
+            channel.queue_declare(queue=name)
+            channel.basic_consume(name, telegram_received, auto_ack=True)
+            print('Waiting for messages. To exit press CTRL+C')
+            channel.start_consuming()
+        except KeyboardInterrupt:
+            channel.stop_consuming()
+        finally:
+            # close the access port
+            kdrive.kdrive_ap_close(ap)
+            # close the connection
+            connection.close()
     else:
         print('No KNX USB Interfaces found, exiting...')
 
@@ -107,13 +111,19 @@ def start_live_mode(args):
 
 
 def start_debug_mode(args):
-    connection = pika.BlockingConnection(pika.ConnectionParameters(args.queue_ip))
-    channel = connection.channel()
-    name = 'traffic-player-{0}'.format(args.player_id)
-    channel.queue_declare(queue=name)
-    channel.basic_consume(name, telegram_received, auto_ack=False)
-    print('Waiting for messages. To exit press CTRL+C')
-    channel.start_consuming()
+    try:
+        connection = pika.BlockingConnection(pika.ConnectionParameters(args.queue_ip))
+        channel = connection.channel()
+        name = 'traffic-player-{0}'.format(args.player_id)
+        channel.queue_declare(queue=name)
+        channel.basic_consume(name, telegram_received, auto_ack=True)
+        print('Waiting for messages. To exit press CTRL+C')
+        channel.start_consuming()
+    except KeyboardInterrupt:
+        channel.stop_consuming()
+    finally:
+        # close the connection
+        connection.close()
 
 
 def on_error_callback(e, user_data):

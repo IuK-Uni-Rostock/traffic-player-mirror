@@ -11,7 +11,7 @@ from networkx import Graph
 class WalkingPerson(Attack):
     metadata = {
         "name": "WalkingPerson",
-        "icon": "mdi-vector-polyline"
+        "icon": "mdi-run-fast"
     }
 
     def __init__(self, database,

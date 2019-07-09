@@ -53,6 +53,11 @@ class Attack:
                 if math.floor((sent_telegrams / all_telegrams) * 100) > status:
                     status = math.floor((sent_telegrams / all_telegrams) * 100)
                     await progress_callback(status)
+        except asyncio.CancelledError:
+            # clear queue when attack is cancelled
+            for queue in player_queues:
+                queue[1].queue_purge(queue=queue[0])
+                print("Cleared queue", queue[0])
         except:
             raise
         finally:

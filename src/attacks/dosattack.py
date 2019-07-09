@@ -9,7 +9,7 @@ from src.attacks.attack import Attack
 class DoSAttack(Attack):
     metadata = {
         "name": "Denial of Service",
-        "icon": "mdi-run-fast"
+        "icon": "mdi-nuke"
     }
 
     def __init__(self, database,

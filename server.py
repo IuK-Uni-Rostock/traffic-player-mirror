@@ -15,8 +15,6 @@ from aiohttp_index import IndexMiddleware
 from src.attacks import attacks
 from src.database import Database
 
-logger = logging.getLogger('traffic-player')
-
 sio = socketio.AsyncServer()
 running_attacks = []
 
@@ -32,7 +30,7 @@ def connect(sid, environ):
 
 
 async def error(msg):
-    logging.error(msg)
+    print("Error:", msg)
     await sio.emit("error", msg)
 
 
@@ -71,6 +69,14 @@ async def stop_attack(sid, name):
         running_attacks.remove(attack)
 
 
+@sio.on("stop all attacks")
+async def stop_attack(sid):
+    print("Stopping all attacks")
+    for attack in running_attacks:
+        attack[1].cancel()
+        running_attacks.remove(attack)
+
+
 @sio.on('get attacks')
 async def send_attacks(sid, *args):
     await sio.emit('attacks', data=[a.get_attack_info() for a in attacks])
@@ -95,7 +101,6 @@ async def cleanup(app):
 
 
 if __name__ == "__main__":
-    logger.setLevel(logging.DEBUG)
     loop = asyncio.get_event_loop()
     app = loop.run_until_complete(create_app())
     app.on_cleanup.append(cleanup)

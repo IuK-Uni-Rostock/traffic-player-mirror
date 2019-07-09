@@ -35,6 +35,10 @@
           </v-list-tile-content>
         </v-list-tile>
       </v-list>
+      <v-btn block left outline color="indigo" style="width: 90%; position: fixed; bottom: 0" @click="stopAllAttacks()">
+        <v-icon dark>stop</v-icon>
+        Stop all attacks
+      </v-btn>
     </v-navigation-drawer>
     <v-toolbar
       app
@@ -70,6 +74,9 @@ export default {
     }
   },
   methods: {
+    stopAllAttacks: function() {
+       window.sio.emit('stop all attacks');
+    }
   },
   mounted: function() {
     window.sio.on('attacks', a => {
@@ -97,7 +104,6 @@ footer {
 .v-snack__content {
   font-size: 8px;
 }
-
 .v-snack__wrapper {
   max-width: 100vw !important;
 }
