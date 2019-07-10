@@ -16,9 +16,26 @@ python3 -V
 
 #set -ex
 
+# create new virtual enviornment depending on player name
+PLAYER_SUPPLIED=0
+for i in "$@"; do
+    if [ "$PLAYER_SUPPLIED" -eq "1" ]; then
+        VENV_NAME="venv$i"
+	break
+    fi
+    if [ "$i" = "-p" ] || [ "$i" = "--player" ]; then
+        PLAYER_SUPPLIED=1
+    fi
+done
+
+if [ $PLAYER_SUPPLIED -eq "0" ]; then
+    echo "Wrong arguments."
+    exit 1
+fi
+
 # Activate virtual environment
-python3 -m venv venv
-. venv/bin/activate
+python3 -m venv "$VENV_NAME"
+. "$VENV_NAME"/bin/activate
 
 # Install dependencies
 python3 -m pip install --upgrade pip setuptools wheel
