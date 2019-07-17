@@ -54,7 +54,9 @@ async def start_attack(sid, name, params):
 
                 async def on_progress(p):
                     await sio.emit("attack status", {"name": name, "status": p})
-                running_attacks.append((name, app.loop.create_task(attack.start(on_progress))))
+                attack_task = app.loop.create_task(attack.start(on_progress))
+                running_attacks.append((name, attack_task))
+                await attack_task
             except:
                 await error(traceback.format_exc())
             return
@@ -70,11 +72,9 @@ async def stop_attack(sid, name):
 
 
 @sio.on("stop all attacks")
-async def stop_attack(sid):
+async def stop_all_attacks(sid):
     print("Stopping all attacks")
-    for attack in running_attacks:
-        attack[1].cancel()
-        running_attacks.remove(attack)
+    await cleanup(app)
 
 
 @sio.on('get attacks')
@@ -98,6 +98,7 @@ async def create_app():
 async def cleanup(app):
     for attack in running_attacks:
         attack[1].cancel()
+        running_attacks.remove(attack)
 
 
 if __name__ == "__main__":
